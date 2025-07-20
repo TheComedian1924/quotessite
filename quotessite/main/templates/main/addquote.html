@@ -13,12 +13,17 @@
     <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
 </head>
 <body>
-  <form method="post">
+  <form method="post" class="addform">
     {% csrf_token %}
-    {{ form.text }}
-    {{ form.source }}
-    {{ form.weight }}
-    <button type="submit">Добавить цитату</button>
+    {{ form.text }}<br>
+    {{ form.source }}<br>
+    {{ form.weight }}<br>
+    {% if form.errors %}
+      <div>
+        {{ form.errors }}
+      </div>
+    {% endif %}
+    <button type="submit" class="btn btn-outline-light btn-lg addbtn">Добавить цитату</button>
   </form>
 </body>
 </html>

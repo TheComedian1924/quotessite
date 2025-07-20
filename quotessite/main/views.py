@@ -1,22 +1,40 @@
-from django.shortcuts import render, redirect
-from .models import Quotedatabase
-from .forms import QuotesdatabaseForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
+from .models import Quotes
+from .forms import QuotesForm
 import random
 
+
 def index(request):
-    allq = Quotedatabase.objects.all()
+    allq = Quotes.objects.all()
     showone = random.choices(allq, weights = [q.weight for q in allq], k = 1)[0]
     return render(request, 'main/home.html', {'showone': showone})
 
+
 def addquote(request):
-    if request.method == 'POST':
-        form = QuotesdatabaseForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    form = QuotesdatabaseForm()
+    form = QuotesForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('home')
     return render(request, 'main/addquote.html', {'form': form})
 
+
 def showtop(request):
-    top10 = Quotedatabase.objects.order_by('-likes')[:10]
+    top10 = Quotes.objects.order_by('-likes')[:10]
     return render(request, 'main/top.html', {'top10': top10})
+
+
+@require_POST
+def like(request, quote_id):
+    quote = get_object_or_404(Quotes, id=quote_id)
+    quote.likes += 1
+    quote.save()
+    return redirect('home')
+
+
+@require_POST
+def dislike(request, quote_id):
+    quote = get_object_or_404(Quotes, id=quote_id)
+    quote.dislikes += 1
+    quote.save()
+    return redirect('home')

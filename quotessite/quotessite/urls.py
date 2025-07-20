@@ -22,5 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('addquote/', views.addquote, name = 'addquote'),
     path('top/', views.showtop, name = 'top'),
+    path('like/<int:quote_id>', views.like, name = 'like'),
+    path('dislike/<int:quote_id>', views.dislike, name = 'dislike'),
     path('', views.index, name = 'home')
 ]

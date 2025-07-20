@@ -13,9 +13,16 @@
     <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
 </head>
 <body>
-  {% for q in top10 %}
-    {{ q.text }}<br>
-    - {{ q.source }}<br>
-  {% endfor %}
+  <a href="{% url 'home' %}" class="btn btn-dark backbtn">Назад</a>
+  <h2 class="tophead">Топ-10 цитат</h2>
+  <ul class="top">
+    {% for q in top10 %}
+      <li>
+        {{ q.text }}<br>
+        - {{ q.source }}<br>
+        ♥{{ q.likes }} 🞩{{ q.dislikes }}  👁{{ q.views }}
+      </li>
+    {% endfor %}
+  </ul>
 </body>
 </html>

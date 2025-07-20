@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import Quotedatabase
+from .models import Quotes
 
-admin.site.register(Quotedatabase)
+admin.site.register(Quotes)

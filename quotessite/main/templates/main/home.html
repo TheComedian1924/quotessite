@@ -13,13 +13,34 @@
     <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
 </head>
 <body>
-  {{ showone.text }}<br>
-  - {{ showone.source }}<br>
-  <a href="{% url 'top' %}">
-      Топ-10 цитат
+  <main class="main1">
+    <div class="main2">
+      {{ showone.text }}<br>
+      <footer>- {{ showone.source }}</footer>
+    </div>
+
+    <div class="actions">
+
+      <form action="{% url 'like' showone.id %}" method="post" style="display:inline-block">
+        {% csrf_token %}
+        <button type="submit" class="ldbtn">♥</button>{{ showone.likes }}
+      </form>
+
+      <form action="{% url 'dislike' showone.id %}" method="post" style="display:inline-block">
+        {% csrf_token %}
+        <button type="submit" class="ldbtn">🞩</button>{{ showone.dislikes }}
+      </form>
+
+      <span class="viewers">👁</span>{{ showone.views }}<br>
+
+    </div>
+
+  </main>
+  <a href="{% url 'top' %}" class="btn btn-dark btn1">
+    Топ-10 цитат
   </a><br>
-  <a href="{% url 'addquote' %}">
-      Добавить цитату
+  <a href="{% url 'addquote' %}" class="btn btn-dark btn2">
+    Добавить цитату
   </a>
 </body>
 </html>
