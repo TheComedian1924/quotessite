@@ -8,6 +8,8 @@ import random
 def index(request):
     allq = Quotes.objects.all()
     showone = random.choices(allq, weights = [q.weight for q in allq], k = 1)[0]
+    showone.views += 1
+    showone.save()
     return render(request, 'main/home.html', {'showone': showone})
 
 
