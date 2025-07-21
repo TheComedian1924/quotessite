@@ -1,8 +1,10 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 from .models import Quotes
 from .forms import QuotesForm
-import random
+import random, json
 
 
 def index(request):
@@ -29,14 +31,23 @@ def showtop(request):
 @require_POST
 def like(request, quote_id):
     quote = get_object_or_404(Quotes, id=quote_id)
-    quote.likes += 1
+    data = json.loads(request.body)
+    remove = data.get("remove", False)
+    if remove:
+        quote.likes = max(0, quote.likes - 1)
+    else:
+        quote.likes += 1
     quote.save()
-    return redirect('home')
-
+    return JsonResponse({"likes": quote.likes})
 
 @require_POST
 def dislike(request, quote_id):
     quote = get_object_or_404(Quotes, id=quote_id)
-    quote.dislikes += 1
+    data = json.loads(request.body)
+    remove = data.get("remove", False)
+    if remove:
+        quote.dislikes = max(0, quote.dislikes - 1)
+    else:
+        quote.dislikes += 1
     quote.save()
-    return redirect('home')
+    return JsonResponse({"dislikes": quote.dislikes})

@@ -23,17 +23,106 @@
 
       <form action="{% url 'like' showone.id %}" method="post" style="display:inline-block">
         {% csrf_token %}
-        <button type="submit" class="ldbtn">♥</button>{{ showone.likes }}
+        <button type="button" class="ldbtn" id="lkbtn">♥</button><span id="lkcnt">{{ showone.likes }}</span>
       </form>
 
       <form action="{% url 'dislike' showone.id %}" method="post" style="display:inline-block">
         {% csrf_token %}
-        <button type="submit" class="ldbtn">🞩</button>{{ showone.dislikes }}
+        <button type="button" class="ldbtn" id="dslkbtn">🞩</button><span id="dslkcnt">{{ showone.dislikes }}</span>
       </form>
 
       <span class="viewers">👁</span>{{ showone.views }}<br>
 
     </div>
+
+    <script>
+      const quoteId = "{{ showone.id }}";
+      const likeBtn = document.getElementById("lkbtn");
+      const likeCount = document.getElementById("lkcnt");
+      const dislikeBtn = document.getElementById("dslkbtn");
+      const dislikeCount = document.getElementById("dslkcnt");
+
+    //задается цвет кнопки в зависимости от сохраненного лайка/дизлайка
+      if (localStorage.getItem(`liked_${quoteId}`) === "true") {
+        likeBtn.style.color = "red";
+      }
+      if (localStorage.getItem(`disliked_${quoteId}`) === "true") {
+        dislikeBtn.style.color = "red";
+      }
+
+    //обрабатываем клик по кнопке лайка
+      likeBtn.addEventListener("click", async function (e) {
+        e.preventDefault();
+        const liked = localStorage.getItem(`liked_${quoteId}`) === "true";
+        const disliked = localStorage.getItem(`disliked_${quoteId}`) === "true";
+
+      //если стоит дизлайк, удаляем его
+        if (disliked) {
+          const res = await fetch("{% url 'dislike' showone.id %}", {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ remove: true })          //передаем во вьюшку, что надо удалить дизлайк
+          });
+          const data = await res.json();
+          dislikeCount.textContent = data.dislikes;
+          dislikeBtn.style.color = "";
+          localStorage.setItem(`disliked_${quoteId}`, "false");
+        }
+
+      //ставим или убираем лайк
+        const res = await fetch("{% url 'like' showone.id %}", {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ remove: liked })
+        });
+        const data = await res.json();
+        likeCount.textContent = data.likes;
+        likeBtn.style.color = liked ? "" : "red";
+        localStorage.setItem(`liked_${quoteId}`, (!liked).toString());
+      });
+
+      dislikeBtn.addEventListener("click", async function (e) {
+        e.preventDefault();
+        const disliked = localStorage.getItem(`disliked_${quoteId}`) === "true";
+        const liked = localStorage.getItem(`liked_${quoteId}`) === "true";
+
+  // Сначала убираем лайк, если он был
+        if (liked) {
+          const res = await fetch("{% url 'like' showone.id %}", {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ remove: true })
+          });
+          const data = await res.json();
+          likeCount.textContent = data.likes;
+          likeBtn.style.color = "";
+          localStorage.setItem(`liked_${quoteId}`, "false");
+        }
+
+        // Теперь ставим или убираем дизлайк
+        const res = await fetch("{% url 'dislike' showone.id %}", {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ remove: disliked })
+        });
+        const data = await res.json();
+        dislikeCount.textContent = data.dislikes;
+        dislikeBtn.style.color = disliked ? "" : "red";
+        localStorage.setItem(`disliked_${quoteId}`, (!disliked).toString());
+      });
+    </script>
 
   </main>
   <a href="{% url 'top' %}" class="btn btn-dark btn1">
