@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
 </head>
 <body>
+  <a href="{% url 'home' %}" class="btn btn-dark backbtn">Назад</a>
   <form method="post" class="addform">
     {% csrf_token %}
     {{ form.text }}<br>

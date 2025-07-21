@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
 </head>
 <body>
+  {% if empty %}
+    <p class="main1 main2">Цитат пока нет. Добавьте первую!</p>
+  {% else %}
   <main class="main1">
     <div class="main2">
       {{ showone.text }}<br>
@@ -52,7 +55,7 @@
 
     //обрабатываем клик по кнопке лайка
       likeBtn.addEventListener("click", async function (e) {
-        e.preventDefault();
+        e.preventDefault();                                     //без обновления страницы
         const liked = localStorage.getItem(`liked_${quoteId}`) === "true";
         const disliked = localStorage.getItem(`disliked_${quoteId}`) === "true";
 
@@ -125,6 +128,7 @@
     </script>
 
   </main>
+  {% endif %}
   <a href="{% url 'top' %}" class="btn btn-dark btn1">
     Топ-10 цитат
   </a><br>

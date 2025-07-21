@@ -9,6 +9,8 @@ import random, json
 
 def index(request):
     allq = Quotes.objects.all()
+    if not allq:
+        return render(request, 'main/home.html', {'showone': None, 'empty': True})
     showone = random.choices(allq, weights = [q.weight for q in allq], k = 1)[0]
     showone.views += 1
     showone.save()
